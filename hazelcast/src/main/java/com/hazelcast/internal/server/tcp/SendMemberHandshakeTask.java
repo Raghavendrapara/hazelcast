@@ -22,15 +22,18 @@ import com.hazelcast.instance.ProtocolType;
 import com.hazelcast.internal.cluster.impl.MemberHandshake;
 import com.hazelcast.internal.nio.Packet;
 import com.hazelcast.internal.server.ServerContext;
+import com.hazelcast.internal.util.StringUtil;
 import com.hazelcast.logging.ILogger;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.hazelcast.internal.cluster.impl.MemberHandshake.OPTION_PLANE_COUNT;
 import static com.hazelcast.internal.cluster.impl.MemberHandshake.OPTION_PLANE_INDEX;
+import static com.hazelcast.internal.cluster.impl.MemberHandshake.OPTION_TPC_PORTS;
 import static com.hazelcast.internal.cluster.impl.MemberHandshake.SCHEMA_VERSION_2;
 
 public class SendMemberHandshakeTask implements Runnable {
@@ -42,6 +45,7 @@ public class SendMemberHandshakeTask implements Runnable {
     private final boolean reply;
     private final int planeIndex;
     private final int planeCount;
+    private final List<Integer> tpcPorts;
 
     public SendMemberHandshakeTask(ILogger logger,
                                    ServerContext serverContext,
@@ -49,7 +53,8 @@ public class SendMemberHandshakeTask implements Runnable {
                                    Address remoteAddress,
                                    boolean reply,
                                    int planeIndex,
-                                   int planeCount) {
+                                   int planeCount,
+                                   List<Integer> tpcPorts) {
         this.logger = logger;
         this.serverContext = serverContext;
         this.connection = connection;
@@ -57,6 +62,7 @@ public class SendMemberHandshakeTask implements Runnable {
         this.reply = reply;
         this.planeIndex = planeIndex;
         this.planeCount = planeCount;
+        this.tpcPorts = tpcPorts;
     }
 
     @Override
@@ -67,6 +73,18 @@ public class SendMemberHandshakeTask implements Runnable {
         if (logger.isFinestEnabled()) {
             logger.finest("Sending memberHandshake packet to " + remoteAddress);
         }
+
+        System.out.println("Sending memberhandshake, reply:" + reply + " to " + connection.getRemoteSocketAddress()
+                + " with tpcPorts:" + tpcPorts);
+
+        StringBuffer sb = new StringBuffer();
+        for(int k=0;k<tpcPorts.size();k++){
+            if(k>0){
+                sb.append(',');
+            }
+            sb.append(tpcPorts.get(k));
+        }
+
         MemberHandshake memberHandshake = new MemberHandshake(
                 SCHEMA_VERSION_2,
                 getConfiguredLocalAddresses(),
@@ -74,7 +92,8 @@ public class SendMemberHandshakeTask implements Runnable {
                 reply,
                 serverContext.getThisUuid())
                 .addOption(OPTION_PLANE_COUNT, planeCount)
-                .addOption(OPTION_PLANE_INDEX, planeIndex);
+                .addOption(OPTION_PLANE_INDEX, planeIndex)
+                .addOption(OPTION_TPC_PORTS, sb.toString());
         byte[] bytes = serverContext.getSerializationService().toBytes(memberHandshake);
         Packet packet = new Packet(bytes).setPacketType(Packet.Type.SERVER_CONTROL);
         connection.write(packet);

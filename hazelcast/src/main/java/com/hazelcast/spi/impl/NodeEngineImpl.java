@@ -26,6 +26,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.datastore.ExternalDataStoreService;
 import com.hazelcast.datastore.impl.ExternalDataStoreServiceImpl;
 import com.hazelcast.instance.impl.Node;
+import com.hazelcast.internal.alto.AltoRuntime;
 import com.hazelcast.internal.cluster.ClusterService;
 import com.hazelcast.internal.diagnostics.Diagnostics;
 import com.hazelcast.internal.dynamicconfig.ClusterWideConfigurationService;
@@ -199,7 +200,7 @@ public class NodeEngineImpl implements NodeEngine {
         return tpcServerBootstrap;
     }
 
-    private void checkMapMergePolicies(Node node) {
+     private void checkMapMergePolicies(Node node) {
         Map<String, MapConfig> mapConfigs = node.config.getMapConfigs();
         for (MapConfig mapConfig : mapConfigs.values()) {
             WanReplicationRef wanReplicationRef = mapConfig.getWanReplicationRef();
@@ -265,6 +266,7 @@ public class NodeEngineImpl implements NodeEngine {
         splitBrainProtectionService.start();
         sqlService.start();
         tpcServerBootstrap.start();
+
         diagnostics.start();
         node.getNodeExtension().registerPlugins(diagnostics);
     }
@@ -594,6 +596,7 @@ public class NodeEngineImpl implements NodeEngine {
         if (tpcServerBootstrap != null) {
             tpcServerBootstrap.shutdown();
         }
+
     }
 
     @Override

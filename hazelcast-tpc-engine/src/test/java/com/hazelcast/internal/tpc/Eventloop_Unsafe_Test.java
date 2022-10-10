@@ -20,10 +20,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.hazelcast.internal.tpc.TpcTestSupport.assertEqualsEventually;
+import static com.hazelcast.internal.tpc.TpcTestSupport.assertOpenEventually;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.assertEquals;
 
 public abstract class Eventloop_Unsafe_Test {
 
@@ -44,6 +47,17 @@ public abstract class Eventloop_Unsafe_Test {
 
 
     @Test
+    public void test_scheduleAtFixedRate() {
+//        AtomicInteger executedCount = new AtomicInteger();
+//        long startMs = System.currentTimeMillis();
+//        eventloop.offer(() -> eventloop.unsafe().sc);
+//
+//        assertEqualsEventually(1, executedCount);
+//        long duration = System.currentTimeMillis() - startMs;
+//        System.out.println("duration:" + duration + " ms");
+    }
+
+    @Test
     public void test_sleep() {
         AtomicInteger executedCount = new AtomicInteger();
         long startMs = System.currentTimeMillis();
@@ -55,4 +69,18 @@ public abstract class Eventloop_Unsafe_Test {
         System.out.println("duration:" + duration + " ms");
     }
 
+    @Test
+    public void test_loop() {
+//        AtomicInteger executedCount = new AtomicInteger();
+//        int iterations = 10;
+//        CountDownLatch completed = new CountDownLatch(1);
+//
+//        eventloop.offer(() -> eventloop.unsafe().loop(eventloop -> {
+//            executedCount.incrementAndGet();
+//            return executedCount.get() < iterations;
+//        }).then((o, ex) -> completed.countDown()));
+//
+//        assertOpenEventually(completed);
+//        assertEquals(executedCount.get(), iterations);
+    }
 }

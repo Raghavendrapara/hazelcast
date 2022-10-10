@@ -39,7 +39,8 @@ import com.hazelcast.spi.impl.NodeEngineImpl;
 import com.hazelcast.spi.impl.PartitionSpecificRunnable;
 import com.hazelcast.spi.impl.executionservice.ExecutionService;
 import com.hazelcast.spi.impl.operationexecutor.OperationExecutor;
-import com.hazelcast.spi.impl.operationexecutor.impl.OperationExecutorImpl;
+import com.hazelcast.spi.impl.operationexecutor.impl.ClassicOperationExecutor;
+import com.hazelcast.spi.impl.operationexecutor.impl.TPCOperationExecutor;
 import com.hazelcast.spi.impl.operationexecutor.impl.TPCOperationExecutor;
 import com.hazelcast.spi.impl.operationexecutor.slowoperationdetector.SlowOperationDetector;
 import com.hazelcast.spi.impl.operationservice.InvocationBuilder;
@@ -195,7 +196,7 @@ public final class OperationServiceImpl implements StaticMetricsProvider, LiveOp
                     node.getNodeExtension(), hzName, configClassLoader);
         } else {
             logger.info("Using OperationExecutorImpl");
-            this.operationExecutor = new OperationExecutorImpl(
+            this.operationExecutor = new ClassicOperationExecutor(
                     properties, node.loggingService, thisAddress, new OperationRunnerFactoryImpl(this),
                     node.getNodeExtension(), hzName, configClassLoader);
         }

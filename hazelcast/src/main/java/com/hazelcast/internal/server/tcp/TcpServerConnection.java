@@ -27,21 +27,21 @@ import com.hazelcast.internal.nio.ConnectionLifecycleListener;
 import com.hazelcast.internal.nio.ConnectionType;
 import com.hazelcast.internal.server.ServerConnection;
 import com.hazelcast.internal.server.ServerContext;
-import com.hazelcast.logging.ILogger;
 import com.hazelcast.internal.tpc.AsyncSocket;
+import com.hazelcast.logging.ILogger;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import java.io.EOFException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.channels.CancelledKeyException;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
-
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 
 import static com.hazelcast.internal.metrics.MetricDescriptorConstants.TCP_METRIC_CONNECTION_CONNECTION_TYPE;
 import static com.hazelcast.internal.metrics.ProbeLevel.DEBUG;
@@ -96,6 +96,7 @@ public class TcpServerConnection implements ServerConnection {
 
     private volatile String closeReason;
     private volatile int planeIndex = -1;
+    private List<Integer> remoteTpcPorts;
 
     public TcpServerConnection(TcpServerConnectionManager connectionManager,
                                ConnectionLifecycleListener<TcpServerConnection> lifecycleListener,
@@ -375,5 +376,13 @@ public class TcpServerConnection implements ServerConnection {
                 + ", connectionType=" + connectionType
                 + ", planeIndex=" + planeIndex
                 + "]";
+    }
+
+    public void setRemoteTpcPorts(List<Integer> remoteTpcPorts) {
+        this.remoteTpcPorts = remoteTpcPorts;
+    }
+
+    public List<Integer> getRemoteTpcPorts() {
+        return remoteTpcPorts;
     }
 }

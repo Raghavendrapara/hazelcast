@@ -16,6 +16,8 @@
 
 package com.hazelcast.internal.tpc;
 
+import com.hazelcast.internal.tpc.iobuffer.IOBufferAllocator;
+import com.hazelcast.internal.tpc.iouring.IOUringAsyncFile;
 import com.hazelcast.internal.tpc.util.CachedNanoClock;
 import com.hazelcast.internal.tpc.util.CircularQueue;
 import com.hazelcast.internal.tpc.util.NanoClock;
@@ -65,6 +67,10 @@ public abstract class Unsafe {
     public final Eventloop eventloop() {
         return eventloop;
     }
+
+    public abstract IOBufferAllocator fileIOBufferAllocator();
+
+    public abstract AsyncFile newAsyncFile(String path);
 
     /**
      * Returns a new Promise.

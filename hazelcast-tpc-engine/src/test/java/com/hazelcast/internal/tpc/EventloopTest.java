@@ -173,6 +173,7 @@ public abstract class EventloopTest {
     public void test_shutdown_thenAsyncServerSocketsClosed() {
         Eventloop eventloop = createEventloop();
         eventloop.start();
+
         AsyncServerSocket serverSocket = eventloop.openTcpAsyncServerSocket();
         serverSocket.setReusePort(true);
         SocketAddress local = new InetSocketAddress("127.0.0.1", 5000);
@@ -195,13 +196,13 @@ public abstract class EventloopTest {
         serverSocket.accept(socket -> {
         }).join();
 
-        AsyncSocket clientSocket = serverEventloop.openTcpAsyncSocket();
+        Eventloop clientEventloop = createEventloop();
+        AsyncSocket clientSocket = clientEventloop.openTcpAsyncSocket();
         clientSocket.setReadHandler(new ReadHandler() {
             @Override
             public void onRead(ByteBuffer receiveBuffer) {
             }
         });
-        Eventloop clientEventloop = createEventloop();
         clientEventloop.start();
         clientSocket.activate(clientEventloop);
         clientSocket.connect(serverAddress);
